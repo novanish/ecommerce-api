@@ -1,6 +1,5 @@
 const UnAuthenticatedError = require("../errors/UnAuthenticatedError");
 const UnAuthorizedError = require("../errors/UnAuthorizedError");
-const { USER_ROLES } = require("../utils/constants");
 const { verifyJWT } = require("../utils/jwt");
 
 function authenticateUser(req, _, next) {
