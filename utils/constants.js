@@ -7,4 +7,9 @@ const TOKEN_COOKIE_OPTIONS = {
   signed: true,
 };
 
-module.exports = { TOKEN_COOKIE_OPTIONS };
+const USER_ROLES = {
+  USER: "USER",
+  ADMIN: "ADMIN",
+};
+
+module.exports = { TOKEN_COOKIE_OPTIONS, USER_ROLES };
