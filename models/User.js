@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const brycpt = require("bcryptjs");
+const { createJWT } = require("../utils/jwt");
 
 const userSchema = new mongoose.Schema(
   {
@@ -19,8 +21,8 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      trim: true,
       required: [true, "Password is required"],
+      select: false,
     },
 
     role: {
@@ -31,5 +33,34 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+
+  this.password = await brycpt.hash(this.password, 10);
+});
+
+userSchema.static("doesUserExistsWithEmail", async function (email) {
+  return Boolean(await this.findOne({ email }));
+});
+
+userSchema.methods.createJWT = function () {
+  return createJWT({ userId: this._id, userRole: this.role });
+};
+
+userSchema.methods.verifyPassword = function (password) {
+  return brycpt.compare(password, this.password);
+};
+
+userSchema.methods.toJSON = function () {
+  const userObject = this.toObject();
+  userObject.id = userObject._id;
+
+  delete userObject.password;
+  delete userObject.__v;
+  delete userObject._id;
+
+  return userObject;
+};
 
 module.exports = mongoose.model("User", userSchema);
