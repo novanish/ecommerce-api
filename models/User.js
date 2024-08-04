@@ -34,10 +34,21 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+function hashPassword(password) {
+  return brycpt.hash(password, 10);
+}
+
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
 
-  this.password = await brycpt.hash(this.password, 10);
+  this.password = await hashPassword(this.password);
+});
+
+userSchema.pre("findOneAndUpdate", async function () {
+  const update = this.getUpdate();
+  if (update.password) {
+    update.password = await hashPassword(update.password);
+  }
 });
 
 userSchema.static("doesUserExistsWithEmail", async function (email) {
