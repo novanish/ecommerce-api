@@ -12,4 +12,10 @@ const USER_ROLES = {
   ADMIN: "ADMIN",
 };
 
-module.exports = { TOKEN_COOKIE_OPTIONS, USER_ROLES };
+const PRODUCT_CATEGORIES = {
+  OFFICE: "Office",
+  KITCHEN: "Kitchen",
+  BEDROOM: "Bedroom",
+};
+
+module.exports = { TOKEN_COOKIE_OPTIONS, USER_ROLES, PRODUCT_CATEGORIES };
