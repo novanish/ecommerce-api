@@ -81,4 +81,14 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+productSchema.methods.toJSON = function () {
+  const product = this.toObject();
+  product.id = product._id;
+
+  delete product.__v;
+  delete product._id;
+
+  return product;
+};
+
 module.exports = mongoose.model("Product", productSchema);
