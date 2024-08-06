@@ -37,4 +37,16 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+reviewSchema.indexes({ product: 1, user: 1 }, { unique: true });
+
+reviewSchema.toJSON = function () {
+  const review = this.toObject();
+  review.id = review._id;
+
+  delete review._id;
+  delete review.__v;
+
+  return review;
+};
+
 module.exports = mongoose.model("Review", reviewSchema);
