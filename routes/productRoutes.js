@@ -9,6 +9,7 @@ const {
   getAllProducts,
   uploadProductImage,
 } = require("../controllers/productController");
+const { getAllReviews } = require("../controllers/reviewController");
 const {
   authenticateUser,
   ensureRole,
@@ -23,6 +24,7 @@ const fileUploadMiddleware = fileUpload({
   responseOnLimit: "File size limit has been reached",
 });
 
+router.get("/:productId/reviews", getAllReviews);
 router.route("/").get(getAllProducts).post(adminAuthMiddleware, createProduct);
 router.post(
   "/upload-image",
