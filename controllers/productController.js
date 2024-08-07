@@ -86,7 +86,9 @@ function checkOwnership(product, userId) {
   const isOwner = userId === productOwnerId;
 
   if (!isOwner) {
-    throw new UnauthorizedError("You are not allowed to delete this product");
+    throw new UnauthorizedError(
+      "You are not authorized to perform this action"
+    );
   }
 }
 
