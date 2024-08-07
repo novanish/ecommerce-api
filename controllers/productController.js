@@ -5,7 +5,7 @@ const { StatusCodes } = require("http-status-codes");
 
 const Product = require("../models/Product");
 const NotFoundError = require("../errors/NotFoundError");
-const UnauthorizedError = require("../errors/UnauthorizedError");
+const UnauthorizedError = require("../errors/UnAuthorizedError");
 const BadRequestError = require("../errors/BadRequestError");
 
 const getAllProducts = async (_, res) => {
