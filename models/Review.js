@@ -39,7 +39,7 @@ const reviewSchema = new mongoose.Schema(
 
 reviewSchema.indexes({ product: 1, user: 1 }, { unique: true });
 
-reviewSchema.toJSON = function () {
+reviewSchema.methods.toJSON = function () {
   const review = this.toObject();
   review.id = review._id;
 
