@@ -72,13 +72,34 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
 
+    reviewCount: {
+      type: Number,
+      default: 0,
+    },
+
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: [true, 'Please provide product owner "user"'],
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
+);
+
+productSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "product",
+  justOne: false,
+  options: { sort: { rating: -1, createdAt: -1 } },
+});
+
+productSchema.pre(
+  "deleteOne",
+  { document: true, query: false },
+  async function () {
+    await this.model("Review").deleteMany({ product: this._id });
+  }
 );
 
 productSchema.methods.toJSON = function () {
