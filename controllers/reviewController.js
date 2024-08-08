@@ -8,16 +8,19 @@ const UnAuthorizedError = require("../errors/UnAuthorizedError");
 
 const getAllReviews = async (req, res) => {
   const { productId } = req.params;
-  const reviews = await Review.find({ product: productId }).select("-user");
+  const reviews = await Review.find({ product: productId })
+    .sort("-rating -createdAt")
+    .populate({
+      path: "user",
+      select: "name email",
+    });
 
   res.status(StatusCodes.OK).json({ reviews });
 };
 
 const getReviewById = async (req, res) => {
-  const { id, productId } = req.params;
-  const review = await Review.findOne({ _id: id, product: productId }).select(
-    "-user"
-  );
+  const { id } = req.params;
+  const review = await Review.findOne({ _id: id }).select("-user");
   if (!review) {
     throw new NotFoundError(`No review with id : ${id}`);
   }
@@ -46,7 +49,20 @@ const createReview = async (req, res) => {
 };
 
 const updateReview = async (req, res) => {
-  res.send("Update review");
+  const { id } = req.params;
+
+  const review = await Review.findById(id);
+  if (!review) {
+    throw new NotFoundError(`No review with id : ${id}`);
+  }
+
+  const currentlyLoggedInUserId = req.user.userId;
+  checkReviewOwnership(review, currentlyLoggedInUserId);
+
+  Object.assign(review, req.body);
+  await review.save();
+
+  res.status(StatusCodes.OK).json({ review });
 };
 
 const deleteReview = async (req, res) => {
