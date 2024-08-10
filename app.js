@@ -4,6 +4,10 @@ require("express-async-errors");
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const expressRateLimit = require("express-rate-limit");
+const ms = require("ms");
 
 const connectDB = require("./db/connect");
 const notFoundMiddleware = require("./middlewares/notFound");
@@ -17,6 +21,15 @@ const orderRouter = require("./routes/orderRoutes");
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(helmet());
+app.use(mongoSanitize());
+app.use(
+  expressRateLimit({
+    windowMs: ms("15m"),
+    max: 70,
+  })
+);
 
 app.use(morgan("tiny"));
 app.use(express.json());
