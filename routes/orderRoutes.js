@@ -10,7 +10,6 @@ const {
   getCurrentUserOrders,
   createOrder,
   getOrder,
-  deleteOrder,
   updateOrder,
 } = require("../controllers/orderController");
 
@@ -23,6 +22,6 @@ router
   .get(ensureRole(USER_ROLES.ADMIN), getAllOrders)
   .post(createOrder);
 router.get("/my-orders", getCurrentUserOrders);
-router.route("/:id").get(getOrder).patch(updateOrder).delete(deleteOrder);
+router.route("/:id").get(getOrder).patch(updateOrder);
 
 module.exports = router;
