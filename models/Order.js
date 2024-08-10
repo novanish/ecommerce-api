@@ -2,23 +2,23 @@ const mongoose = require("mongoose");
 
 const { ORDER_STATUS } = require("../utils/constants");
 
-const cartItemSchema = new mongoose.Schema({
+const orderItemSchema = new mongoose.Schema({
   product: {
     ref: "Product",
     type: mongoose.Types.ObjectId,
-    required: [true, "Please provide cart item product"],
+    required: [true, "Please provide order item product"],
   },
 
-  qunatity: {
+  quantity: {
     type: Number,
-    required: [true, "Please provide cart item quantity"],
+    required: [true, "Please provide order item quantity"],
   },
 });
 
 const orderSchema = new mongoose.Schema(
   {
     orderItems: {
-      type: [cartItemSchema],
+      type: [orderItemSchema],
       required: [true, "Please provide order items"],
     },
 
@@ -61,10 +61,21 @@ const orderSchema = new mongoose.Schema(
 
     paymentIntentId: {
       type: String,
-      required: [true, "Please provide payment intent id"],
     },
   },
   { timestamps: true }
 );
+
+orderSchema.index({ user: 1 });
+
+orderSchema.methods.toJSON = function () {
+  const order = this.toObject();
+  order.id = order._id;
+
+  delete order._id;
+  delete order.__v;
+
+  return order;
+};
 
 module.exports = mongoose.model("Order", orderSchema);
