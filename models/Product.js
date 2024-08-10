@@ -56,9 +56,16 @@ const productSchema = new mongoose.Schema(
       default: false,
     },
 
-    freeShipping: {
-      type: Boolean,
-      default: false,
+    shippingFee: {
+      type: Number,
+      default: 0,
+    },
+
+    tax: {
+      type: Number,
+      default: 0,
+      min: [0, "Tax must be a positive number"],
+      max: [100, "Tax must be at most 100"],
     },
 
     inventory: {
