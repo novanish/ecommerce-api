@@ -25,9 +25,12 @@ const ORDER_STATUS = {
   CANCELED: "CANCELED",
 };
 
+const MAX_PER_PAGE = 40;
+
 module.exports = {
   TOKEN_COOKIE_OPTIONS,
   USER_ROLES,
   PRODUCT_CATEGORIES,
   ORDER_STATUS,
+  MAX_PER_PAGE,
 };
