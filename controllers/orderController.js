@@ -8,24 +8,44 @@ const Product = require("../models/Product");
 const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
 const UnAuthorizedError = require("../errors/UnAuthorizedError");
+const { calculatePagination } = require("../utils/helpers");
 
 const getAllOrders = async (req, res) => {
-  const orders = await Order.find({}).sort("-updatedAt -createdAt");
-  res.status(StatusCodes.OK).json({ orders });
+  const ordersCount = await Order.countDocuments();
+  const { page, skip, perPage, ...pagination } = calculatePagination({
+    count: ordersCount,
+    perPage: Number(req.query.perPage ?? 10),
+    currentPage: Number(req.query.page ?? 1),
+  });
+
+  const orders = await Order.find({})
+    .sort("-updatedAt")
+    .skip(skip)
+    .limit(perPage);
+
+  res.status(StatusCodes.OK).json({ orders, ...pagination });
 };
 
 const getCurrentUserOrders = async (req, res) => {
   const { userId } = req.user;
-  const orders = await Order.find({ user: userId }).sort(
-    "-updatedAt -createdAt"
-  );
+  const ordersCount = await Order.countDocuments({ user: userId });
+  const { page, skip, perPage, ...pagination } = calculatePagination({
+    count: ordersCount,
+    perPage: Number(req.query.perPage ?? 10),
+    currentPage: Number(req.query.page ?? 1),
+  });
 
-  console.log(await Order.find({}));
-  res.status(StatusCodes.OK).json({ orders });
+  const orders = await Order.find({ user: userId })
+    .sort("-updatedAt")
+    .skip(skip)
+    .limit(perPage);
+
+  res.status(StatusCodes.OK).json({ orders, ...pagination });
 };
 
 const getOrder = async (req, res) => {
   const orderId = req.params.id;
+
   const order = await Order.findById(orderId);
   if (!order) {
     throw new NotFoundError(`Order with id ${orderId} not found`);
