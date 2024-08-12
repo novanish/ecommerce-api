@@ -7,10 +7,21 @@ const Product = require("../models/Product");
 const NotFoundError = require("../errors/NotFoundError");
 const UnauthorizedError = require("../errors/UnAuthorizedError");
 const BadRequestError = require("../errors/BadRequestError");
+const { createPagination } = require("../utils/helpers");
 
 const getAllProducts = async (_, res) => {
-  const products = await Product.find({}).sort("updateAt createdAt");
-  res.status(StatusCodes.OK).json({ products });
+  const productCount = await Product.countDocuments();
+  const { page, skip, perPage, ...pagination } = createPagination({
+    count: productCount,
+    perPage: Number(req.query.perPage ?? 10),
+    currentPage: Number(req.query.page ?? 1),
+  });
+
+  const products = await Product.find({})
+    .sort("-updateAt")
+    .skip(skip)
+    .limit(perPage);
+  res.status(StatusCodes.OK).json({ products, ...pagination });
 };
 
 const getProductById = async (req, res) => {
