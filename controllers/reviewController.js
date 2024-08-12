@@ -5,17 +5,27 @@ const Product = require("../models/Product");
 const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
 const UnAuthorizedError = require("../errors/UnAuthorizedError");
+const { calculatePagination } = require("../utils/helpers");
 
 const getAllReviews = async (req, res) => {
   const { productId } = req.params;
+  const reviewsCount = await Review.countDocuments({ product: productId });
+  const { page, skip, perPage, ...pagination } = calculatePagination({
+    count: reviewsCount,
+    perPage: Number(req.query.perPage ?? 10),
+    currentPage: Number(req.query.page ?? 1),
+  });
+
   const reviews = await Review.find({ product: productId })
     .sort("-rating -createdAt")
     .populate({
       path: "user",
       select: "name email",
-    });
+    })
+    .skip(skip)
+    .limit(perPage);
 
-  res.status(StatusCodes.OK).json({ reviews });
+  res.status(StatusCodes.OK).json({ reviews, ...pagination });
 };
 
 const getReviewById = async (req, res) => {
